@@ -10,7 +10,7 @@ def get_db_connection():
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
         url = urlparse(DATABASE_URL)
-        conn = psycopg2.connect(
+        conn = pg8000.connect(
             database=url.path[1:],
             user=url.username,
             password=url.password,
