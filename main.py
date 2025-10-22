@@ -2,13 +2,17 @@ from flask import Flask, request, jsonify
 import pg8000
 import os
 from urllib.parse import urlparse
+import time
 
 app = Flask(__name__)
 
-# Подключение к БД
 def get_db_connection():
     DATABASE_URL = os.environ.get('DATABASE_URL')
-    if DATABASE_URL:
+    if not DATABASE_URL:
+        print("DATABASE_URL environment variable is not set")
+        return None
+    
+    try:
         url = urlparse(DATABASE_URL)
         conn = pg8000.connect(
             database=url.path[1:],
@@ -18,22 +22,37 @@ def get_db_connection():
             port=url.port
         )
         return conn
-    return None
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return None
 
-# Создание таблицы при старте
+# Отложенная инициализация БД
 def init_db():
-    conn = get_db_connection()
-    if conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS messages (
-                    id SERIAL PRIMARY KEY,
-                    content TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT NOW()
-                )
-            """)
-            conn.commit()
-        conn.close()
+    max_retries = 3
+    for attempt in range(max_retries):
+        conn = get_db_connection()
+        if conn:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        CREATE TABLE IF NOT EXISTS messages (
+                            id SERIAL PRIMARY KEY,
+                            content TEXT NOT NULL,
+                            created_at TIMESTAMP DEFAULT NOW()
+                        )
+                    """)
+                    conn.commit()
+                conn.close()
+                print("Database initialized successfully")
+                return
+            except Exception as e:
+                print(f"Database initialization error: {e}")
+                conn.close()
+        else:
+            print(f"Failed to connect to database (attempt {attempt + 1}/{max_retries})")
+            time.sleep(2)
+    
+    print("Database initialization failed after multiple attempts")
 
 # Инициализация БД при запуске
 init_db()
