@@ -1,10 +1,7 @@
 from flask import Flask, request, jsonify
-<<<<<<< HEAD
-=======
 import psycopg2
 import os
 from urllib.parse import urlparse
->>>>>>> 60df9a02c4d93833144f1dc52cc29065449a4bc7
 
 app = Flask(__name__)
 
@@ -49,12 +46,6 @@ def hello():
 def echo():
     data = request.get_json()
     return jsonify({
-<<<<<<< HEAD
-        "status": "received",
-        "you_sent": data,
-        "length": len(str(data)) if data else 0
-    })
-=======
         "status": "received", 
         "you_sent": data,
         "length": len(str(data)) if data else 0
@@ -96,7 +87,6 @@ def get_messages():
     except Exception as e:
         conn.close()
         return jsonify({"error": str(e)}), 500
->>>>>>> 60df9a02c4d93833144f1dc52cc29065449a4bc7
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
