@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import psycopg2
+import psycopg
 import os
 
 app = Flask(__name__)
@@ -12,7 +12,7 @@ def get_db_connection():
         return None
     
     try:
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = psycopg.connect(DATABASE_URL)
         print("Database connection successful")
         return conn
     except Exception as e:
