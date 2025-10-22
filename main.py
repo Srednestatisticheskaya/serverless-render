@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import psycopg
+import psycopg2
 import os
 
 app = Flask(__name__)
@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Подключение к БД
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    conn = psycopg.connect(DATABASE_URL)
+    conn = psycopg2.connect(DATABASE_URL)
 else:
     conn = None
 
