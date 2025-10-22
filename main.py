@@ -1,29 +1,16 @@
 from flask import Flask, request, jsonify
+import pg8000  # ← ИСПРАВИТЬ НА pg8000
 import os
-import sys
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
-# Попытка импорта psycopg2 с обработкой ошибок
-try:
-    import psycopg2
-    from urllib.parse import urlparse
-    PSYCOPG2_AVAILABLE = True
-except ImportError as e:
-    print(f"Psycopg2 import error: {e}")
-    PSYCOPG2_AVAILABLE = False
-    # Временное хранилище в памяти для демонстрации
-    demo_messages = []
-
 def get_db_connection():
-    if not PSYCOPG2_AVAILABLE:
-        return None
-        
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
         try:
             url = urlparse(DATABASE_URL)
-            conn = psycopg2.connect(
+            conn = pg8000.connect(  # ← ИСПРАВИТЬ НА pg8000
                 database=url.path[1:],
                 user=url.username,
                 password=url.password,
