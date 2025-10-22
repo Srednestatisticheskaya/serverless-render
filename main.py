@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import psycopg
+import pg8000
 import os
 from urllib.parse import urlparse
 
